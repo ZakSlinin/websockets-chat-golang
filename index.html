@@ -54,7 +54,7 @@
 
     function connect() {
         const nickname = document.getElementById("nickname").value || "Anonymous";
-        ws = new WebSocket(`ws://192.168.0.111:8080/ws?nickname=${nickname}`);
+        ws = new WebSocket(`ws://93.170.121.96:8080/ws?nickname=${nickname}`);
 
         ws.onopen = () => {
             log("✅ Connected");
