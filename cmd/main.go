@@ -26,6 +26,8 @@ type ChatRoom struct {
 	broadcast  chan []byte
 	register   chan *Client
 	unregister chan *Client
+
+	maxClients int
 }
 
 func NewChatRoom() *ChatRoom {
@@ -34,6 +36,7 @@ func NewChatRoom() *ChatRoom {
 		broadcast:  make(chan []byte),
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
+		maxClients: 30,
 	}
 }
 
