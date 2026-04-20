@@ -134,6 +134,7 @@ func main() {
 	chatRoom := NewChatRoom()
 	go chatRoom.Run()
 	r := gin.Default()
+	r.StaticFile("/", "../index.html")
 	r.GET("/ws", chatRoom.HandleWebSocket)
 	r.Run(":8080")
 	fmt.Println("Server started at localhost:8080")
