@@ -28,6 +28,8 @@ type ChatRoom struct {
 	unregister chan *Client
 
 	maxClients int
+
+	history [][]byte
 }
 
 func NewChatRoom() *ChatRoom {
@@ -37,6 +39,7 @@ func NewChatRoom() *ChatRoom {
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
 		maxClients: 30,
+		history:    make([][]byte, 0),
 	}
 }
 
@@ -46,6 +49,9 @@ func (cr *ChatRoom) Run() {
 		select {
 		case client := <-cr.register:
 			cr.clients.Store(client, true)
+			for _, msg := range cr.history {
+				client.send <- msg
+			}
 			cr.sendToAll([]byte(client.nickname + " joined the chat"))
 		case client := <-cr.unregister:
 			if _, ok := cr.clients.LoadAndDelete(client); ok {
@@ -53,6 +59,13 @@ func (cr *ChatRoom) Run() {
 			}
 			cr.sendToAll([]byte(client.nickname + " left the chat"))
 		case message := <-cr.broadcast:
+			cr.history = append(cr.history, message)
+
+			// limit history size
+			if len(cr.history) > 50 {
+				cr.history = cr.history[1:]
+			}
+
 			cr.sendToAll(message)
 		}
 	}
